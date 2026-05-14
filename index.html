@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="author" content="Zahra Essam">
+<title>Chapter 1 · المغامرة الرقمية — م. زهراء عصام</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════════ */
+:root{
+  --blue:#2563EB; --blue-2:#1D4ED8; --blue-lt:#DBEAFE; --blue-dk:#1E3A8A; --blue-xdk:#0C1A40;
+  --blue-ac:#60A5FA; --blue-glow:rgba(96,165,250,.3);
+  --green:#10B981; --green-lt:#D1FAE5; --green-ac:#34D399;
+  --orange:#F97316; --orange-lt:#FFF7ED; --orange-ac:#FB923C;
+  --purple:#7C3AED; --purple-lt:#EDE9FE; --purple-ac:#A78BFA;
+  --red:#EF4444; --red-lt:#FEE2E2;
+  --yellow:#F59E0B; --yellow-lt:#FEF3C7; --yellow-ac:#FCD34D;
+  --ink:#0A1628; --ink-2:#1C2B3A; --ink-3:#334155; --ink-4:#64748B; --ink-5:#94A3B8;
+  --white:#FFFFFF; --bg:#F0F6FF; --rule:#CBD5E1;
+  --f:'Cairo',sans-serif; --fm:'IBM Plex Mono',monospace;
+  --r:14px; --r-sm:8px; --r-xs:4px;
+  --step-dur:.38s; --slide-dur:.42s;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{
+  font-family:var(--f);
+  background:#060D20;
+  min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  overflow-x:hidden;overflow-y:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ══════════════════════════════════════════════
+   VIEWPORT + SLIDE WRAPPER
+══════════════════════════════════════════════ */
+#slide-viewport{
+  position:relative;
+  width:100%;max-width:1100px;
+  flex:1;
+  overflow:hidden;
+  background:transparent;
+}
+
+.slide{
+  display:none;
+  position:absolute;inset:0;
+  background:linear-gradient(150deg,#0C1F42 0%,#0A2155 55%,#061837 100%);
+  border-radius:0;
+  overflow:hidden;
+  flex-direction:column;
+}
+.slide.active{
+  display:flex;
+  animation:sldIn var(--slide-dur) cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes sldIn{from{opacity:0;transform:scale(.97) translateY(14px)}to{opacity:1;transform:none}}
+
+/* grid bg */
+.slide::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(96,165,250,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(96,165,250,.04) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;z-index:0;
+}
+.slide::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 20%,rgba(37,99,235,.25) 0%,transparent 55%),
+    radial-gradient(ellipse at 80% 80%,rgba(124,58,237,.15) 0%,transparent 55%);
+  pointer-events:none;z-index:0;
+}
+
+/* ══════════════════════════════════════════════
+   SLIDE INNER LAYOUT
+══════════════════════════════════════════════ */
+.slide-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 22px 0;position:relative;z-index:10;flex-shrink:0;
+}
+.s-tag{
+  font-family:var(--fm);font-size:clamp(8px,1.4vw,10px);letter-spacing:3px;
+  color:rgba(96,165,250,.75);background:rgba(96,165,250,.1);
+  border:1px solid rgba(96,165,250,.22);border-radius:100px;padding:4px 12px;
+  text-transform:uppercase;white-space:nowrap;
+}
+.s-num{
+  font-family:var(--fm);font-size:clamp(9px,1.4vw,11px);
+  color:rgba(255,255,255,.28);letter-spacing:1px;
+}
+.s-num span{color:var(--blue-ac);}
+
+.slide-body{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:10px 22px;position:relative;z-index:2;overflow:hidden;overflow-y:auto;gap:12px;
+  scrollbar-width:none;
+}
+.slide-body::-webkit-scrollbar{display:none;}
+
+.slide-foot{
+  padding:7px 22px 9px;position:relative;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+  border-top:1px solid rgba(255,255,255,.04);
+}
+.foot-author{
+  font-family:var(--fm);font-size:clamp(8px,1.3vw,10px);
+  letter-spacing:2px;color:rgba(255,255,255,.22);
+}
+.sp-dots{display:flex;gap:4px;align-items:center;}
+.sp-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.15);transition:all .2s;
+}
+.sp-dot.lit{background:var(--blue-ac);box-shadow:0 0 4px var(--blue-ac);}
+
+/* ══════════════════════════════════════════════
+   CONTROL BAR (strictly outside viewport)
+══════════════════════════════════════════════ */
+#control-bar{
+  width:100%;max-width:1100px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 16px env(safe-area-inset-bottom,8px);
+  background:rgba(6,13,32,.92);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid rgba(96,165,250,.1);
+  flex-shrink:0;
+}
+.c-btn{
+  font-family:var(--f);font-size:clamp(13px,2.2vw,15px);font-weight:800;
+  color:var(--white);background:rgba(37,99,235,.25);
+  border:1.5px solid rgba(96,165,250,.3);border-radius:100px;
+  padding:0 20px;height:48px;min-width:90px;
+  cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;flex-shrink:0;
+}
+.c-btn:hover{background:rgba(37,99,235,.45);border-color:var(--blue-ac);}
+.c-btn:active{transform:scale(.94);}
+.c-btn:disabled{opacity:.3;pointer-events:none;}
+
+#prog-wrap{
+  display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;
+  max-width:calc(100% - 220px);
+}
+.p-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,.15);transition:all .2s;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;flex-shrink:0;
+}
+.p-dot.active{background:var(--blue-ac);width:18px;border-radius:4px;box-shadow:0 0 5px var(--blue-ac);}
+.p-dot.done{background:rgba(96,165,250,.38);}
+
+/* ══════════════════════════════════════════════
+   STEP MECHANISM
+══════════════════════════════════════════════ */
+.step{
+  opacity:0;visibility:hidden;
+  transform:translateY(14px);pointer-events:none;
+  transition:opacity var(--step-dur) ease,
+             visibility var(--step-dur) ease,
+             transform var(--step-dur) cubic-bezier(.22,1,.36,1);
+}
+.step.revealed{opacity:1;visibility:visible;transform:none;pointer-events:auto;}
+
+/* ══════════════════════════════════════════════
+   TYPOGRAPHY UTILS
+══════════════════════════════════════════════ */
+.mono-tag{
+  font-family:var(--fm);font-size:clamp(8px,1.4vw,10px);letter-spacing:4px;
+  color:rgba(96,165,250,.72);background:rgba(96,165,250,.1);
+  border:1px solid rgba(96,165,250,.18);border-radius:100px;padding:4px 14px;
+  text-transform:uppercase;white-space:nowrap;
+}
+.s-title{
+  font-size:clamp(22px,4.5vw,46px);font-weight:900;color:var(--white);
+  text-align:center;line-height:1.2;
+}
+.s-title .hl{color:var(--blue-ac);}
+.s-title .gold{color:var(--yellow-ac);}
+.s-title .grn{color:var(--green-ac);}
+.s-sub{
+  font-size:clamp(13px,2vw,16px);font-weight:600;
+  color:rgba(255,255,255,.5);text-align:center;line-height:1.6;max-width:640px;
+}
+.full-w{width:100%;max-width:900px;}
+
+/* ══════════════════════════════════════════════
+   CARD GRID UTILS
+══════════════════════════════════════════════ */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,2vw,16px);width:100%;max-width:900px;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1.5vw,12px);width:100%;max-width:900px;}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.5vw,12px);width:100%;max-width:900px;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}.three-col{grid-template-columns:1fr 1fr;}.four-col{grid-template-columns:1fr 1fr;}}
+@media(max-width:420px){.three-col,.four-col{grid-template-columns:1fr;}}
+
+/* Info card */
+.info-card{
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:var(--r);padding:clamp(12px,2vw,18px);
+  display:flex;flex-direction:column;gap:6px;
+  transition:border-color .2s,transform .2s;
+}
+.info-card:hover{border-color:rgba(96,165,250,.4);transform:translateY(-2px);}
+.ic-ico{font-size:clamp(24px,4vw,32px);}
+.ic-title{font-size:clamp(14px,2.2vw,17px);font-weight:900;color:var(--white);}
+.ic-sub{font-size:clamp(11px,1.7vw,13px);color:rgba(255,255,255,.55);line-height:1.6;}
+
+/* Byte quote */
+.byte-quote{
+  background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:var(--r);padding:clamp(12px,2vw,18px);
+  display:flex;align-items:flex-start;gap:12px;width:100%;max-width:900px;
+}
+.bq-av{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,#1D4ED8,#3B82F6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.bq-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--blue-ac);margin-bottom:4px;}
+.bq-txt{font-size:clamp(12px,1.9vw,14px);color:rgba(255,255,255,.75);line-height:1.7;}
+.bq-txt strong{font-family:var(--fm);font-size:11px;background:rgba(96,165,250,.1);padding:1px 5px;border-radius:3px;color:var(--blue-ac);}
+
+/* Pro-tip */
+.pro-tip{
+  background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(251,191,36,.07));
+  border:1.5px solid rgba(245,158,11,.3);border-radius:var(--r-sm);
+  padding:clamp(10px,1.8vw,14px) clamp(14px,2.2vw,20px);
+  font-size:clamp(11px,1.8vw,13.5px);font-weight:700;color:rgba(255,255,255,.85);
+  display:flex;align-items:center;gap:10px;width:100%;max-width:900px;line-height:1.5;
+}
+.pt-ico{font-size:clamp(16px,2.8vw,20px);flex-shrink:0;}
+
+/* Teaser box */
+.teaser-box{
+  background:linear-gradient(135deg,rgba(37,99,235,.15),rgba(6,182,212,.1));
+  border:1.5px solid rgba(96,165,250,.3);border-radius:var(--r);
+  padding:clamp(14px,2.5vw,22px) clamp(18px,3vw,28px);
+  max-width:680px;width:100%;text-align:center;
+  box-shadow:0 0 40px rgba(37,99,235,.1);
+}
+.tb-label{font-family:var(--fm);font-size:clamp(9px,1.5vw,10px);letter-spacing:3px;color:var(--blue-ac);margin-bottom:8px;}
+.tb-q{font-size:clamp(14px,2.3vw,18px);font-weight:700;color:var(--white);line-height:1.6;}
+.tb-q .hl{color:var(--yellow-ac);}
+.tb-q .bl{color:var(--blue-ac);}
+
+/* ══════════════════════════════════════════════
+   QUIZ ENGINE
+══════════════════════════════════════════════ */
+.quiz-wrap{display:flex;flex-direction:column;gap:clamp(8px,1.5vw,12px);width:100%;max-width:800px;}
+.q-stem{
+  font-size:clamp(16px,2.8vw,22px);font-weight:800;color:var(--white);
+  text-align:center;line-height:1.4;
+  background:rgba(255,255,255,.05);border-radius:var(--r);
+  padding:clamp(12px,2vw,18px);border:1px solid rgba(255,255,255,.1);
+}
+.q-stem .hl{color:var(--blue-ac);}
+.q-opts{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.3vw,10px);}
+@media(max-width:520px){.q-opts{grid-template-columns:1fr;}}
+.quiz-option{
+  background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.14);
+  border-radius:var(--r-sm);padding:clamp(11px,2vw,16px);
+  font-family:var(--f);font-size:clamp(13px,2.1vw,16px);font-weight:700;color:var(--white);
+  cursor:pointer;display:flex;align-items:center;gap:10px;
+  transition:all .2s;text-align:right;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.quiz-option:hover{background:rgba(96,165,250,.12);border-color:rgba(96,165,250,.35);}
+.qo-lbl{
+  width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:12px;font-weight:900;flex-shrink:0;
+  transition:all .2s;
+}
+.quiz-option.correct{
+  background:rgba(34,197,94,.15)!important;border-color:#22c55e!important;
+  color:#86EFAC!important;animation:correctPulse .5s ease;
+}
+.quiz-option.correct .qo-lbl{background:#22c55e;border-color:#22c55e;color:#fff;}
+.quiz-option.wrong{
+  background:rgba(239,68,68,.12)!important;border-color:#ef4444!important;
+  color:#FCA5A5!important;animation:shake .4s ease;
+}
+.quiz-option.wrong .qo-lbl{background:#ef4444;border-color:#ef4444;color:#fff;}
+.quiz-option.disabled{cursor:default;pointer-events:none;}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-6px);}
+  40%{transform:translateX(6px);}
+  60%{transform:translateX(-4px);}
+  80%{transform:translateX(4px);}
+}
+@keyframes correctPulse{
+  0%{box-shadow:0 0 0 0 rgba(34,197,94,.5);}
+  70%{box-shadow:0 0 0 12px rgba(34,197,94,0);}
+  100%{box-shadow:none;}
+}
+.q-feedback{
+  border-radius:var(--r-sm);padding:clamp(10px,1.8vw,14px) clamp(14px,2.2vw,20px);
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:clamp(12px,1.9vw,14px);line-height:1.7;font-weight:600;
+  transition:all .3s;
+}
+.qf-correct{background:rgba(34,197,94,.1);border:1.5px solid rgba(34,197,94,.3);color:#86EFAC;}
+.qf-wrong  {background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);color:#FCA5A5;}
+.qf-ico{font-size:clamp(18px,3vw,22px);flex-shrink:0;}
+.quiz-score-bar{
+  height:4px;background:rgba(255,255,255,.1);border-radius:2px;
+  width:100%;max-width:800px;overflow:hidden;
+}
+.qsb-fill{
+  height:100%;background:linear-gradient(90deg,var(--blue),var(--green-ac));
+  border-radius:2px;transition:width .5s ease;
+}
+
+/* ══════════════════════════════════════════════
+   IPO PIPELINE
+══════════════════════════════════════════════ */
+.ipo-pipeline{
+  display:flex;align-items:center;gap:0;
+  width:100%;max-width:860px;
+  background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:var(--r);overflow:hidden;
+}
+@media(max-width:640px){
+  .ipo-pipeline{flex-direction:column;}
+  .pipe-arrow{transform:rotate(90deg)!important;}
+}
+.pipe-node{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:clamp(14px,2.5vw,22px) clamp(10px,2vw,16px);text-align:center;
+}
+.pn-ico{
+  width:clamp(52px,9vw,68px);height:clamp(52px,9vw,68px);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:clamp(22px,4vw,30px);border:2px solid;
+}
+.pn-in  .pn-ico{background:rgba(37,99,235,.18);border-color:rgba(96,165,250,.4);}
+.pn-cpu .pn-ico{background:rgba(245,158,11,.12);border-color:rgba(251,191,36,.4);}
+.pn-out .pn-ico{background:rgba(16,185,129,.12);border-color:rgba(52,211,153,.3);}
+.pn-sto .pn-ico{background:rgba(124,58,237,.12);border-color:rgba(167,139,250,.3);}
+.pn-label{font-family:var(--fm);font-size:clamp(8px,1.4vw,10px);letter-spacing:2px;color:rgba(255,255,255,.45);}
+.pn-name{font-size:clamp(13px,2.2vw,16px);font-weight:900;color:var(--white);}
+.pn-ex{font-size:clamp(10px,1.7vw,12px);color:rgba(255,255,255,.4);text-align:center;}
+.pipe-arrow{
+  flex:0 0 clamp(28px,4vw,40px);text-align:center;font-size:clamp(16px,3vw,22px);
+  color:rgba(96,165,250,.4);position:relative;
+}
+.pa-inner{position:relative;display:flex;flex-direction:column;align-items:center;}
+.pa-line{width:2px;height:20px;background:linear-gradient(to bottom,var(--blue-ac),rgba(96,165,250,.2));margin:0 auto;}
+.pa-arr{animation:bounceD 1.4s ease-in-out infinite;}
+@keyframes bounceD{0%,100%{transform:translateY(0);}50%{transform:translateY(3px);}}
+
+/* ══════════════════════════════════════════════
+   IPO COMPONENT MATRIX
+══════════════════════════════════════════════ */
+.ipo-matrix{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1.5vw,12px);
+  width:100%;max-width:900px;
+}
+@media(max-width:640px){.ipo-matrix{grid-template-columns:1fr 1fr;}}
+@media(max-width:360px){.ipo-matrix{grid-template-columns:1fr;}}
+.ipm-col{
+  border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;
+}
+.ipm-head{
+  padding:10px 14px;font-family:var(--fm);font-size:clamp(8px,1.4vw,10px);
+  letter-spacing:2px;font-weight:700;text-align:center;
+}
+.ipm-head.in  {background:rgba(37,99,235,.25);color:var(--blue-ac);}
+.ipm-head.proc{background:rgba(245,158,11,.2);color:var(--yellow-ac);}
+.ipm-head.out {background:rgba(16,185,129,.18);color:var(--green-ac);}
+.ipm-head.sto {background:rgba(124,58,237,.2);color:var(--purple-ac);}
+.ipm-body{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-top:none;padding:10px;flex:1;
+  display:flex;flex-direction:column;gap:6px;
+}
+.ipm-item{
+  background:rgba(255,255,255,.06);border-radius:var(--r-xs);
+  padding:7px 10px;font-size:clamp(10px,1.7vw,12px);font-weight:700;color:rgba(255,255,255,.8);
+  display:flex;align-items:center;gap:6px;
+}
+.ii-ico{font-size:clamp(13px,2.2vw,16px);}
+
+/* ══════════════════════════════════════════════
+   DICT GRID
+══════════════════════════════════════════════ */
+.dict-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(clamp(160px,26vw,210px),1fr));
+  gap:clamp(8px,1.5vw,12px);width:100%;max-width:900px;
+}
+.dict-item{
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:var(--r-sm);padding:clamp(11px,2vw,15px);
+  display:flex;flex-direction:column;gap:5px;
+}
+.di-n{font-family:var(--fm);font-size:9px;color:rgba(255,255,255,.22);}
+.di-en{font-family:var(--fm);font-size:clamp(12px,2vw,15px);font-weight:700;color:var(--blue-ac);}
+.di-sep{color:rgba(255,255,255,.2);font-size:12px;}
+.di-ar{
+  font-size:clamp(11px,1.8vw,13px);font-weight:700;color:rgba(255,255,255,.82);
+  background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);
+  border-radius:100px;padding:3px 11px;width:fit-content;
+}
+
+/* ══════════════════════════════════════════════
+   DATA TABLE
+══════════════════════════════════════════════ */
+.data-table{width:100%;max-width:860px;border-collapse:collapse;font-size:clamp(11px,1.8vw,14px);}
+.data-table th{
+  padding:10px 14px;font-family:var(--fm);font-size:clamp(8px,1.4vw,10px);
+  letter-spacing:1.5px;text-align:center;color:#fff;
+}
+.data-table th.th-data{background:rgba(37,99,235,.35);}
+.data-table th.th-ctx{background:rgba(124,58,237,.3);}
+.data-table th.th-info{background:rgba(16,185,129,.3);}
+.data-table td{
+  padding:9px 14px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06);
+  color:rgba(255,255,255,.8);font-weight:600;
+}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:nth-child(even) td{background:rgba(255,255,255,.025);}
+.td-hl{font-family:var(--fm);font-weight:700;font-size:clamp(12px,2vw,15px);}
+
+/* ══════════════════════════════════════════════
+   DATA EQUATION
+══════════════════════════════════════════════ */
+.eq-row{
+  display:flex;align-items:center;gap:clamp(8px,2vw,16px);
+  flex-wrap:wrap;justify-content:center;width:100%;max-width:860px;
+}
+.eq-box{
+  flex:1;min-width:clamp(100px,20vw,150px);max-width:200px;
+  border-radius:var(--r);padding:clamp(14px,2.5vw,20px);
+  display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+}
+.eq-box.data{background:rgba(37,99,235,.15);border:2px solid rgba(96,165,250,.3);}
+.eq-box.ctx{background:rgba(124,58,237,.15);border:2px solid rgba(167,139,250,.3);}
+.eq-box.proc{background:rgba(245,158,11,.12);border:2px solid rgba(251,191,36,.3);}
+.eq-box.info{background:rgba(16,185,129,.15);border:2px solid rgba(52,211,153,.3);}
+.eb-ico{font-size:clamp(28px,5vw,40px);}
+.eb-title{font-size:clamp(14px,2.2vw,18px);font-weight:900;color:var(--white);}
+.eq-box.data .eb-title{color:var(--blue-ac);}
+.eq-box.ctx .eb-title{color:var(--purple-ac);}
+.eq-box.proc .eb-title{color:var(--yellow-ac);}
+.eq-box.info .eb-title{color:var(--green-ac);}
+.eb-sub{font-size:clamp(10px,1.7vw,12px);color:rgba(255,255,255,.5);line-height:1.5;}
+.eq-op{
+  font-family:var(--fm);font-size:clamp(22px,4vw,32px);font-weight:900;
+  color:rgba(255,255,255,.25);flex-shrink:0;
+}
+
+/* ══════════════════════════════════════════════
+   ROADMAP TEASER
+══════════════════════════════════════════════ */
+.road-card{
+  border-radius:var(--r);overflow:hidden;
+  width:100%;max-width:700px;
+}
+.rc-top{
+  background:linear-gradient(135deg,rgba(37,99,235,.3),rgba(124,58,237,.2));
+  border:2px solid rgba(96,165,250,.35);border-bottom:none;
+  padding:clamp(18px,3vw,26px);text-align:center;
+  border-radius:var(--r) var(--r) 0 0;
+}
+.rc-bot{
+  background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(6,182,212,.15));
+  border:2px solid rgba(52,211,153,.35);border-top:none;
+  padding:clamp(18px,3vw,26px);text-align:center;
+  border-radius:0 0 var(--r) var(--r);
+}
+.rc-arrow-row{
+  display:flex;justify-content:center;align-items:center;
+  background:rgba(0,0,0,.3);border-left:2px solid rgba(96,165,250,.2);
+  border-right:2px solid rgba(52,211,153,.2);padding:8px;
+}
+.rc-arrow{font-size:28px;animation:bounceD 1.4s ease-in-out infinite;}
+.rc-label{font-family:var(--fm);font-size:clamp(9px,1.5vw,11px);letter-spacing:3px;margin-bottom:8px;}
+.rc-top .rc-label{color:rgba(96,165,250,.7);}
+.rc-bot .rc-label{color:rgba(52,211,153,.7);}
+.rc-title{font-size:clamp(18px,3vw,26px);font-weight:900;color:var(--white);margin-bottom:6px;}
+.rc-sub{font-size:clamp(12px,1.8vw,14px);color:rgba(255,255,255,.55);line-height:1.6;}
+
+/* ══════════════════════════════════════════════
+   TITLE SCREEN SPECIFIC
+══════════════════════════════════════════════ */
+.title-robot{
+  width:clamp(90px,14vw,120px);height:clamp(90px,14vw,120px);
+  background:linear-gradient(135deg,#1D4ED8,#2563EB,#3B82F6);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(40px,8vw,60px);
+  border:3px solid rgba(96,165,250,.4);
+  box-shadow:0 0 60px rgba(37,99,235,.45),0 0 0 10px rgba(96,165,250,.05);
+  position:relative;flex-shrink:0;animation:floatY 3s ease-in-out infinite;
+}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.title-robot::after{
+  content:'';position:absolute;inset:-14px;border-radius:50%;
+  border:2px dashed rgba(96,165,250,.2);animation:spin 22s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.title-badges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.tb{
+  padding:8px 16px;border-radius:10px;font-size:clamp(10px,1.7vw,13px);
+  font-weight:800;text-align:center;
+}
+.tb span{display:block;font-size:clamp(8px,1.4vw,10px);opacity:.6;margin-top:2px;font-family:var(--fm);letter-spacing:.5px;}
+.tb-b{background:rgba(37,99,235,.3);border:1px solid rgba(96,165,250,.35);color:#90CAF9;}
+.tb-g{background:rgba(16,185,129,.25);border:1px solid rgba(52,211,153,.35);color:#A5D6A7;}
+.tb-o{background:rgba(249,115,22,.25);border:1px solid rgba(251,146,60,.35);color:#FDBA74;}
+.tb-p{background:rgba(124,58,237,.25);border:1px solid rgba(167,139,250,.35);color:#C4B5FD;}
+
+/* SCORE display */
+.score-display{
+  background:rgba(37,99,235,.15);border:2px solid rgba(96,165,250,.3);
+  border-radius:var(--r);padding:clamp(14px,2.5vw,22px) clamp(20px,3.5vw,32px);
+  text-align:center;width:100%;max-width:500px;
+}
+.sd-label{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--blue-ac);margin-bottom:8px;}
+.sd-score{font-size:clamp(36px,7vw,56px);font-weight:900;color:var(--white);line-height:1;}
+.sd-score span{color:rgba(255,255,255,.3);}
+.sd-msg{font-size:clamp(13px,2.2vw,17px);font-weight:700;color:rgba(255,255,255,.7);margin-top:8px;}
+
+/* Analogy split */
+.analogy-split{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:clamp(10px,2vw,16px);width:100%;max-width:860px;
+}
+@media(max-width:600px){.analogy-split{grid-template-columns:1fr;}}
+.split-card{
+  border-radius:var(--r);padding:clamp(14px,2.5vw,22px);
+  display:flex;flex-direction:column;gap:10px;
+}
+.split-hw{background:rgba(37,99,235,.18);border:2px solid rgba(96,165,250,.35);}
+.split-sw{background:rgba(124,58,237,.18);border:2px solid rgba(167,139,250,.35);}
+.sc-ico{font-size:clamp(28px,5vw,38px);}
+.sc-badge{font-family:var(--fm);font-size:9px;letter-spacing:2px;font-weight:700;padding:4px 12px;border-radius:100px;width:fit-content;}
+.split-hw .sc-badge{background:rgba(96,165,250,.15);color:var(--blue-ac);border:1px solid rgba(96,165,250,.3);}
+.split-sw .sc-badge{background:rgba(167,139,250,.15);color:var(--purple-ac);border:1px solid rgba(167,139,250,.3);}
+.sc-title{font-size:clamp(16px,2.8vw,22px);font-weight:900;}
+.split-hw .sc-title{color:var(--blue-ac);}
+.split-sw .sc-title{color:var(--purple-ac);}
+.sc-desc{font-size:clamp(12px,1.9vw,14px);color:rgba(255,255,255,.7);line-height:1.7;}
+</style>
+</head>
+<body>
+
+<!-- ════════════ SLIDE VIEWPORT ════════════ -->
+<div id="slide-viewport">
+
+  <!-- ╔════════════════════════════════╗
+       ║  S1 · TITLE SCREEN             ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide active" id="s1" data-steps="0">
+    <div class="slide-header">
+      <div class="s-tag">CHAPTER 1 · DIGITAL ADVENTURE</div>
+      <div class="s-num"><span>01</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="title-robot">🤖</div>
+      <div class="mono-tag">م. زهراء عصام · إشراف أكاديمي</div>
+      <div class="s-title" style="font-size:clamp(24px,5vw,50px);">
+        مرحباً بكم في <span class="hl">الشابتر الأول</span><br>
+        <span class="gold">مغامرة الديجيتال</span> 🚀
+      </div>
+      <div class="s-sub">كل حاجة هتعرفها عن الكمبيوتر — من أوّلها للآخر. مفيش حفظ، بس فهم!</div>
+      <div class="title-badges">
+        <div class="tb tb-b">🖥️ ما هو الكمبيوتر؟<span>L 1.1</span></div>
+        <div class="tb tb-b">🔩 Hardware & Software<span>L 1.2</span></div>
+        <div class="tb tb-o">🔄 IPO Cycle<span>L 1.3</span></div>
+        <div class="tb tb-p">📊 Data vs. Info<span>L 1.4</span></div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"></div>
+    </div>
+  </div><!-- /s1 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S2 · QUICK RECAP              ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s2" data-steps="0">
+    <div class="slide-header">
+      <div class="s-tag">QUICK RECAP · تذكير سريع</div>
+      <div class="s-num"><span>02</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">BYTE'S MEMORY FLASH</div>
+      <div class="s-title" style="font-size:clamp(20px,3.5vw,34px);">بايت بيذكّرك بالأساسيات 🤖</div>
+
+      <div class="two-col full-w">
+        <div class="info-card" style="background:rgba(37,99,235,.12);border-color:rgba(96,165,250,.25);">
+          <div class="ic-ico">🧑 🆚 🤖</div>
+          <div class="ic-title" style="color:var(--blue-ac);">الدرس 1.1 · إنسان vs كمبيوتر</div>
+          <div class="ic-sub">الكمبيوتر يتفوق في <strong style="color:#fff">السرعة والتخزين والدقة</strong>.<br>الإنسان يتفوق في <strong style="color:#fff">الإبداع والمشاعر والحكم</strong>.</div>
+        </div>
+        <div class="info-card" style="background:rgba(124,58,237,.12);border-color:rgba(167,139,250,.25);">
+          <div class="ic-ico">🔩 💿</div>
+          <div class="ic-title" style="color:var(--purple-ac);">الدرس 1.2 · الجسد والروح</div>
+          <div class="ic-sub"><strong style="color:#90CAF9">Hardware</strong> = الجسم الملموس (CPU, RAM, Screen).<br><strong style="color:#C4B5FD">Software</strong> = الروح والبرامج (OS, Chrome, Word).</div>
+        </div>
+      </div>
+
+      <div class="byte-quote">
+        <div class="bq-av">🤖</div>
+        <div>
+          <div class="bq-lbl">BYTE SAYS · بايت بيقول</div>
+          <div class="bq-txt">لو ممكن تلمسه = <strong>Hardware</strong>. لو بتنزّله من الإنترنت = <strong>Software</strong>. الـ <strong>OS</strong> هو المدير الكبير اللي بيحكم بينهم!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"></div>
+    </div>
+  </div><!-- /s2 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S3-12 · QUIZ SLIDES (10Qs)    ║
+       ╚════════════════════════════════╝ -->
+
+  <!-- Q1 -->
+  <div class="slide" id="s3" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 1 / 10</div>
+      <div class="s-num"><span>03</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA · التحدي</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:0%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">أي مما يلي يُعتبر <span class="hl">Hardware</span>؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>Windows 11</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">ب</div>RAM</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>Chrome</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>Python</button>
+        </div>
+        <div class="q-feedback step" id="fb3">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> الـ RAM هو ذاكرة وصول عشوائي جوّا الجهاز — تقدر تلمسه = Hardware. الباقي برامج (Software)!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s3-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="slide" id="s4" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 2 / 10</div>
+      <div class="s-num"><span>04</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:10%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">ما هو دور الـ <span class="hl">Operating System</span>؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>تخزين الملفات على الهارد</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">ب</div>إدارة الـ Hardware والبرامج</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>تصميم واجهة المستخدم</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>تشغيل الألعاب بس</button>
+        </div>
+        <div class="q-feedback step" id="fb4">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> الـ OS هو المدير الكبير — بيدير الـ Hardware والبرامج التانية. بدونه ما فيش برنامج يشتغل!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s4-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="slide" id="s5" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 3 / 10</div>
+      <div class="s-num"><span>05</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:20%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">مين يتفوق في <span class="hl">الإبداع</span>؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>الكمبيوتر دايماً</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">ب</div>الإنسان</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>الاتنين زي بعض</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>الروبوت</button>
+        </div>
+        <div class="q-feedback step" id="fb5">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> الإنسان يتفوق في الإبداع والمشاعر والحكم. الكمبيوتر يتفوق في السرعة والدقة والتخزين!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s5-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="slide" id="s6" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 4 / 10</div>
+      <div class="s-num"><span>06</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">BYTE'S PRO-TIP TEST</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:30%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">حسب نصيحة بايت — لو حاجة ممكن تعملها <span class="hl">Download</span> من الإنترنت؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>Hardware</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">ب</div>Software</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>الاتنين</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>مش عارف</button>
+        </div>
+        <div class="q-feedback step" id="fb6">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> لو بتنزّله من الإنترنت = Software! الـ Hardware لازم تشتريه وتحمله في إيدك.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s6-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="slide" id="s7" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 5 / 10</div>
+      <div class="s-num"><span>07</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:40%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">في دورة IPO — مرحلة <span class="hl">الكيبورد</span> هي؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>Output</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ب</div>Process</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">ج</div>Input</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>Storage</button>
+        </div>
+        <div class="q-feedback step" id="fb7">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> الكيبورد هو جهاز Input — بتدخّل منه المعلومات للكمبيوتر. الشاشة هي Output!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s7-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="slide" id="s8" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 6 / 10</div>
+      <div class="s-num"><span>08</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:50%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">الـ <span class="hl">CPU</span> بيمثل أي مرحلة من دورة IPO؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>Input</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">ب</div>Process</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>Output</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>Storage</button>
+        </div>
+        <div class="q-feedback step" id="fb8">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> الـ CPU هو دماغ الكمبيوتر — بيعالج كل البيانات اللي بتيجيله. هو مرحلة الـ Process!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s8-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="slide" id="s9" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 7 / 10</div>
+      <div class="s-num"><span>09</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:60%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem"><span class="hl">Data</span> + سياق + معالجة = ؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>Hardware</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ب</div>Software</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">ج</div>Information</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>Storage</button>
+        </div>
+        <div class="q-feedback step" id="fb9">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> المعادلة السحرية: Data + Context + Processing = <strong>Information</strong>. من غير سياق — مجرد أرقام بلا معنى!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s9-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="slide" id="s10" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 8 / 10</div>
+      <div class="s-num"><span>10</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:70%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">الـ <span class="hl">HDD</span> و الـ <span class="hl">SSD</span> من أجهزة؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">أ</div>Input</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ب</div>Output</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>Process</button>
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">د</div>Storage</button>
+        </div>
+        <div class="q-feedback step" id="fb10">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> الـ HDD و SSD هي وحدات التخزين — بيحفظوا بياناتك حتى بعد إيقاف الجهاز!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s10-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="slide" id="s11" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 9 / 10</div>
+      <div class="s-num"><span>11</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ASSESSMENT ARENA</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:80%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">الرقم <span class="hl">37.2</span> وحده بدون سياق — هو؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">أ</div>Data (بيانات خام)</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ب</div>Information (معلومة)</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>CPU</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>Output</button>
+        </div>
+        <div class="q-feedback step" id="fb11">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> الرقم 37.2 بدون سياق = Data خام. لما نعرف إنه درجة حرارة جسم شخص — بيبقى معلومة مفيدة!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s11-sp0"></div></div>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="slide" id="s12" data-steps="0" data-quiz="true">
+    <div class="slide-header">
+      <div class="s-tag">QUIZ · سؤال 10 / 10</div>
+      <div class="s-num"><span>12</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">FINAL QUESTION · السؤال الأخير</div>
+      <div class="quiz-score-bar full-w"><div class="qsb-fill" style="width:90%"></div></div>
+      <div class="quiz-wrap">
+        <div class="q-stem">الـ <span class="hl">Smart TV</span> هل هو كمبيوتر؟</div>
+        <div class="q-opts">
+          <button class="quiz-option" data-correct="true"><div class="qo-lbl">أ</div>نعم! لأنه بيعالج البيانات</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ب</div>لأ، هو تلفزيون بس</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">ج</div>نعم بس بدون CPU</button>
+          <button class="quiz-option" data-correct="false"><div class="qo-lbl">د</div>مش عارف</button>
+        </div>
+        <div class="q-feedback step" id="fb12">
+          <div class="qf-ico">🤖</div>
+          <div><strong>صح!</strong> أي Smart Device بيعالج بيانات هو كمبيوتر — حتى الـ Smart TV والموبايل والتابلت!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot" id="s12-sp0"></div></div>
+    </div>
+  </div>
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S13 · IPO BRAIN TEASER        ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s13" data-steps="1">
+    <div class="slide-header">
+      <div class="s-tag">L 1.3 · IPO CYCLE</div>
+      <div class="s-num"><span>13</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">TOPIC 1.3 · دورة العمليات الأربعة</div>
+      <div style="font-size:clamp(60px,12vw,90px);animation:floatY 3s ease-in-out infinite;flex-shrink:0;">🍕</div>
+      <div class="s-title" style="font-size:clamp(22px,4vw,40px);">
+        الكمبيوتر بيعمل زي جسمك <span class="hl">بالظبط!</span>
+      </div>
+
+      <div class="teaser-box step" id="s13-s0">
+        <div class="tb-label">🧠 BRAIN TEASER · حيّر دماغك</div>
+        <div class="tb-q">
+          لما بتاكل — بتدخّل أكل (<span class="bl">Input</span>)،<br>
+          جسمك بيعالجه (<span class="bl">Process</span>)،<br>
+          وبيطلع طاقة (<span class="bl">Output</span>).<br>
+          <span class="hl">الكمبيوتر بيعمل نفس الحاجة بالظبط!</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot lit"></div><div class="sp-dot" id="s13-sp0"></div></div>
+    </div>
+  </div><!-- /s13 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S14 · IPO DEEP ANALOGY        ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s14" data-steps="0">
+    <div class="slide-header">
+      <div class="s-tag">L 1.3 · THE ANALOGY</div>
+      <div class="s-num"><span>14</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">HUMAN ↔ COMPUTER MAPPING</div>
+      <div class="s-title" style="font-size:clamp(20px,3.5vw,34px);">
+        دورة الـ <span class="hl">IPO</span> — 4 مراحل
+      </div>
+
+      <div class="ipo-pipeline full-w">
+        <div class="pipe-node pn-in">
+          <div class="pn-ico">🍕</div>
+          <div class="pn-label">INPUT</div>
+          <div class="pn-name">إدخال</div>
+          <div class="pn-ex">أكل ← كيبورد</div>
+        </div>
+        <div class="pipe-arrow">
+          <div class="pa-inner"><div class="pa-line"></div><div class="pa-arr">↓</div></div>
+        </div>
+        <div class="pipe-node pn-cpu">
+          <div class="pn-ico">🫀</div>
+          <div class="pn-label">PROCESS</div>
+          <div class="pn-name">معالجة</div>
+          <div class="pn-ex">هضم ← CPU</div>
+        </div>
+        <div class="pipe-arrow">
+          <div class="pa-inner"><div class="pa-line"></div><div class="pa-arr">↓</div></div>
+        </div>
+        <div class="pipe-node pn-out">
+          <div class="pn-ico">⚡</div>
+          <div class="pn-label">OUTPUT</div>
+          <div class="pn-name">إخراج</div>
+          <div class="pn-ex">طاقة ← شاشة</div>
+        </div>
+        <div class="pipe-arrow">
+          <div class="pa-inner"><div class="pa-line"></div><div class="pa-arr">↓</div></div>
+        </div>
+        <div class="pipe-node pn-sto">
+          <div class="pn-ico">💪</div>
+          <div class="pn-label">STORAGE</div>
+          <div class="pn-name">تخزين</div>
+          <div class="pn-ex">دهون 😂 ← HDD</div>
+        </div>
+      </div>
+
+      <div class="pro-tip full-w">
+        <div class="pt-ico">💡</div>
+        <div>تذكّر الـ 4 مراحل: <strong>أكل → هضم → طاقة → دهون</strong> = <strong>Input → Process → Output → Storage</strong></div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"></div>
+    </div>
+  </div><!-- /s14 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S15 · IPO COMPUTER GRID       ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s15" data-steps="4">
+    <div class="slide-header">
+      <div class="s-tag">L 1.3 · COMPONENTS MATRIX</div>
+      <div class="s-num"><span>15</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">COMPUTER EXECUTION GRID</div>
+      <div class="s-title" style="font-size:clamp(20px,3.5vw,34px);">
+        مين بيعمل إيه؟ 🧩
+      </div>
+
+      <div class="ipo-matrix full-w">
+        <!-- Input -->
+        <div class="ipm-col step" id="s15-s0">
+          <div class="ipm-head in">⬇️ INPUT</div>
+          <div class="ipm-body">
+            <div class="ipm-item"><div class="ii-ico">⌨️</div>كيبورد</div>
+            <div class="ipm-item"><div class="ii-ico">🖱️</div>ماوس</div>
+            <div class="ipm-item"><div class="ii-ico">🎙️</div>ميكروفون</div>
+          </div>
+        </div>
+        <!-- Process -->
+        <div class="ipm-col step" id="s15-s1">
+          <div class="ipm-head proc">⚙️ PROCESS</div>
+          <div class="ipm-body">
+            <div class="ipm-item"><div class="ii-ico">🧠</div>الـ CPU يشتغل</div>
+            <div class="ipm-item"><div class="ii-ico">⚡</div>مليارات/ثانية</div>
+          </div>
+        </div>
+        <!-- Output -->
+        <div class="ipm-col step" id="s15-s2">
+          <div class="ipm-head out">⬆️ OUTPUT</div>
+          <div class="ipm-body">
+            <div class="ipm-item"><div class="ii-ico">🖥️</div>شاشة</div>
+            <div class="ipm-item"><div class="ii-ico">🔊</div>سماعات</div>
+            <div class="ipm-item"><div class="ii-ico">🖨️</div>طابعة</div>
+          </div>
+        </div>
+        <!-- Storage -->
+        <div class="ipm-col step" id="s15-s3">
+          <div class="ipm-head sto">💾 STORAGE</div>
+          <div class="ipm-body">
+            <div class="ipm-item"><div class="ii-ico">💽</div>HDD</div>
+            <div class="ipm-item"><div class="ii-ico">⚡</div>SSD</div>
+            <div class="ipm-item"><div class="ii-ico">🔌</div>USB</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots">
+        <div class="sp-dot lit"></div>
+        <div class="sp-dot" id="s15-sp0"></div>
+        <div class="sp-dot" id="s15-sp1"></div>
+        <div class="sp-dot" id="s15-sp2"></div>
+        <div class="sp-dot" id="s15-sp3"></div>
+      </div>
+    </div>
+  </div><!-- /s15 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S16 · IPO DICTIONARY + LAB    ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s16" data-steps="2">
+    <div class="slide-header">
+      <div class="s-tag">L 1.3 · DICTIONARY & LAB</div>
+      <div class="s-num"><span>16</span>/21</div>
+    </div>
+    <div class="slide-body" style="gap:10px;">
+      <div class="mono-tag">BYTE'S DICTIONARY + LAB</div>
+
+      <div class="dict-grid full-w">
+        <div class="dict-item step" id="s16-s0">
+          <div class="di-n">01</div><div class="di-en">Input</div><div class="di-sep">←</div><div class="di-ar">إدخال</div>
+        </div>
+        <div class="dict-item step" id="s16-s1">
+          <div class="di-n">02</div><div class="di-en">Processing</div><div class="di-sep">←</div><div class="di-ar">معالجة</div>
+        </div>
+      </div>
+
+      <div class="byte-quote full-w" style="background:rgba(37,99,235,.12);border-color:rgba(96,165,250,.25);">
+        <div class="bq-av">🤖</div>
+        <div>
+          <div class="bq-lbl">✅ SOLVED LAB · مثال محلول</div>
+          <div class="bq-txt">لما بتكتب كلمة في Word وتحفظها:<br>
+            <strong>Input</strong>: ضغط الكيبورد → <strong>Process</strong>: CPU يحوّل الضغط لحرف → <strong>Output</strong>: الحرف على الشاشة → <strong>Storage</strong>: حفظ الملف
+          </div>
+        </div>
+      </div>
+
+      <div class="teaser-box full-w" style="max-width:900px;text-align:right;">
+        <div class="tb-label">🤔 YOUR CHALLENGE · تحدّيك</div>
+        <div class="tb-q">لما بتبعت voice message على واتساب — حدّد مرحلة الـ <span class="bl">Input</span> والـ <span class="bl">Output</span>. فكّر وجاوب!</div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots">
+        <div class="sp-dot lit"></div>
+        <div class="sp-dot" id="s16-sp0"></div>
+        <div class="sp-dot" id="s16-sp1"></div>
+      </div>
+    </div>
+  </div><!-- /s16 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S17 · DATA vs INFO TEASER     ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s17" data-steps="1">
+    <div class="slide-header">
+      <div class="s-tag">L 1.4 · DATA vs INFORMATION</div>
+      <div class="s-num"><span>17</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">TOPIC 1.4 · البيانات والمعلومات</div>
+      <div style="font-size:clamp(50px,10vw,80px);animation:floatY 3s ease-in-out infinite;flex-shrink:0;">🌾→🍞</div>
+      <div class="s-title" style="font-size:clamp(20px,3.8vw,38px);">
+        <span class="hl">البيانات</span> وحدها مش معلومة!
+      </div>
+
+      <div class="teaser-box step" id="s17-s0">
+        <div class="tb-label">🧠 BRAIN TEASER · حيّر دماغك</div>
+        <div class="tb-q">
+          <span class="hl">"25, Cairo, 95, Ahmed"</span> — ده بيانات (Data).<br>
+          لما تعرف إن <em>Ahmed</em> عنده 25 سنة وعاش في القاهرة وجاب 95 في الامتحان —<br>
+          <span class="hl">ده معلومة! ليه؟</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"><div class="sp-dot lit"></div><div class="sp-dot" id="s17-sp0"></div></div>
+    </div>
+  </div><!-- /s17 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S18 · DATA EQUATION           ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s18" data-steps="0">
+    <div class="slide-header">
+      <div class="s-tag">L 1.4 · THE EQUATION</div>
+      <div class="s-num"><span>18</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">THE TRANSFORMATION FORMULA</div>
+      <div class="s-title" style="font-size:clamp(18px,3.2vw,32px);">
+        المعادلة السحرية 🪄
+      </div>
+
+      <div class="eq-row full-w">
+        <div class="eq-box data">
+          <div class="eb-ico">🌾</div>
+          <div class="eb-title">Data</div>
+          <div class="eb-sub">بيانات خام<br>بدون معنى</div>
+        </div>
+        <div class="eq-op">+</div>
+        <div class="eq-box ctx">
+          <div class="eb-ico">🔍</div>
+          <div class="eb-title">Context</div>
+          <div class="eb-sub">السياق<br>والإطار</div>
+        </div>
+        <div class="eq-op">+</div>
+        <div class="eq-box proc">
+          <div class="eb-ico">⚙️</div>
+          <div class="eb-title">Processing</div>
+          <div class="eb-sub">المعالجة<br>والتنظيم</div>
+        </div>
+        <div class="eq-op">=</div>
+        <div class="eq-box info">
+          <div class="eb-ico">🍞</div>
+          <div class="eb-title">Information</div>
+          <div class="eb-sub">معلومة مفيدة<br>لها معنى</div>
+        </div>
+      </div>
+
+      <div class="byte-quote full-w">
+        <div class="bq-av">🤖</div>
+        <div>
+          <div class="bq-lbl">BYTE SAYS</div>
+          <div class="bq-txt">القمح = Data. الخبز المخبوز = Information. المعالجة هي اللي حوّلت القمح لخبز مفيد تقدر تاكله!</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"></div>
+    </div>
+  </div><!-- /s18 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S19 · DATA MATRIX TABLE       ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s19" data-steps="0">
+    <div class="slide-header">
+      <div class="s-tag">L 1.4 · DATA MATRIX</div>
+      <div class="s-num"><span>19</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">PREMIUM DATA TABLE</div>
+      <div class="s-title" style="font-size:clamp(18px,3vw,30px);">
+        أمثلة حقيقية 📊
+      </div>
+
+      <div class="full-w" style="overflow-x:auto;border-radius:var(--r);border:1px solid rgba(255,255,255,.1);">
+        <table class="data-table" style="min-width:500px;">
+          <tr>
+            <th class="th-data">🌾 البيانات (Data)</th>
+            <th class="th-ctx">🔍 السياق (Context)</th>
+            <th class="th-info">🍞 المعلومة (Information)</th>
+          </tr>
+          <tr>
+            <td class="td-hl">85, 90, 70, 95</td>
+            <td>درجات امتحان</td>
+            <td><strong style="color:var(--green-ac)">متوسط الفصل = 85%</strong></td>
+          </tr>
+          <tr>
+            <td class="td-hl">01/01/2010</td>
+            <td>تاريخ ميلاد</td>
+            <td><strong style="color:var(--green-ac)">العمر = 15 سنة</strong></td>
+          </tr>
+          <tr>
+            <td class="td-hl">37.2</td>
+            <td>درجة حرارة الجسم</td>
+            <td><strong style="color:var(--green-ac)">الحرارة طبيعية ✓</strong></td>
+          </tr>
+          <tr>
+            <td class="td-hl">500, Cairo, 2hr</td>
+            <td>رحلة سفر</td>
+            <td><strong style="color:var(--green-ac)">القاهرة على 500km · ساعتين</strong></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="pro-tip full-w">
+        <div class="pt-ico">💡</div>
+        <div><strong>Data</strong> مجرد حقائق خام. <strong>Information</strong> هي Data بعد ما حطّيت عليها معنى وسياق!</div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"></div>
+    </div>
+  </div><!-- /s19 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S20 · DATA DICT + LAB         ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s20" data-steps="5">
+    <div class="slide-header">
+      <div class="s-tag">L 1.4 · DICTIONARY + LAB</div>
+      <div class="s-num"><span>20</span>/21</div>
+    </div>
+    <div class="slide-body" style="gap:10px;">
+      <div class="mono-tag">BYTE'S VISUAL DICTIONARY</div>
+
+      <div class="dict-grid full-w">
+        <div class="dict-item step" id="s20-s0">
+          <div class="di-n">01</div><div class="di-en">Data</div><div class="di-sep">←</div><div class="di-ar">بيانات خام</div>
+        </div>
+        <div class="dict-item step" id="s20-s1">
+          <div class="di-n">02</div><div class="di-en">Information</div><div class="di-sep">←</div><div class="di-ar">معلومة — Data + معنى</div>
+        </div>
+        <div class="dict-item step" id="s20-s2">
+          <div class="di-n">03</div><div class="di-en">Context</div><div class="di-sep">←</div><div class="di-ar">السياق</div>
+        </div>
+        <div class="dict-item step" id="s20-s3">
+          <div class="di-n">04</div><div class="di-en">Database</div><div class="di-sep">←</div><div class="di-ar">قاعدة بيانات</div>
+        </div>
+        <div class="dict-item step" id="s20-s4">
+          <div class="di-n">05</div><div class="di-en">Raw Data</div><div class="di-sep">←</div><div class="di-ar">بيانات خام قبل معالجة</div>
+        </div>
+      </div>
+
+      <div class="teaser-box full-w" style="max-width:900px;text-align:right;">
+        <div class="tb-label">🏆 END-OF-CHAPTER CHALLENGE</div>
+        <div class="tb-q">
+          حوّل البيانات دي لمعلومات:<br>
+          <span class="hl">"98.6°F"</span> → ما هي المعلومة لو كانت درجة حرارة؟
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots">
+        <div class="sp-dot lit"></div>
+        <div class="sp-dot" id="s20-sp0"></div>
+        <div class="sp-dot" id="s20-sp1"></div>
+        <div class="sp-dot" id="s20-sp2"></div>
+        <div class="sp-dot" id="s20-sp3"></div>
+        <div class="sp-dot" id="s20-sp4"></div>
+      </div>
+    </div>
+  </div><!-- /s20 -->
+
+
+  <!-- ╔════════════════════════════════╗
+       ║  S21 · ROADMAP HORIZON         ║
+       ╚════════════════════════════════╝ -->
+  <div class="slide" id="s21" data-steps="0">
+    <div class="slide-header">
+      <div class="s-tag">NEXT ADVENTURE · الشابتر الجاي</div>
+      <div class="s-num"><span>21</span>/21</div>
+    </div>
+    <div class="slide-body">
+      <div class="mono-tag">ROADMAP HORIZON</div>
+      <div class="s-title" style="font-size:clamp(20px,3.5vw,36px);">
+        <span class="hl">Chapter 1</span> انتهى! 🎉<br>
+        <span class="grn">Chapter 2</span> جاي...
+      </div>
+
+      <div class="road-card">
+        <div class="rc-top">
+          <div class="rc-label">✅ CHAPTER 1 COMPLETE · BLUE</div>
+          <div class="rc-title">عرفت إيه هو الكمبيوتر 🔵</div>
+          <div class="rc-sub">Hardware · Software · OS · IPO · Data → Info</div>
+        </div>
+        <div class="rc-arrow-row">
+          <div class="rc-arrow">⬇️</div>
+        </div>
+        <div class="rc-bot">
+          <div class="rc-label">🔜 CHAPTER 2 COMING · GREEN</div>
+          <div class="rc-title">لغة الكهرباء والـ Binary 🟢</div>
+          <div class="rc-sub">رحلة داخل المعالج — 0 و1 — والترانزستور</div>
+        </div>
+      </div>
+
+      <div class="byte-quote full-w" style="max-width:700px;background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(6,182,212,.08));border-color:rgba(52,211,153,.3);">
+        <div class="bq-av" style="background:linear-gradient(135deg,#065F46,#059669);">🤖</div>
+        <div>
+          <div class="bq-lbl" style="color:var(--green-ac);">BYTE'S TEASER</div>
+          <div class="bq-txt">المرة الجاية هنعرف إزّاي المايسترو بيكلّم الروبوت <strong>بلغة النور والكهرباء الخفية</strong>.. استنّوني! 🔋⚡</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-foot">
+      <div class="foot-author">Zahra Essam</div>
+      <div class="sp-dots"></div>
+    </div>
+  </div><!-- /s21 -->
+
+</div><!-- /slide-viewport -->
+
+
+<!-- ════════════ CONTROL BAR ════════════ -->
+<div id="control-bar">
+  <button class="c-btn" id="btn-prev" disabled>◀ السابق</button>
+  <div id="prog-wrap">
+    <!-- dots injected by JS -->
+  </div>
+  <button class="c-btn" id="btn-next">التالي ▶</button>
+</div>
+
+
+<!-- ════════════ JAVASCRIPT ════════════ -->
+<script>
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+const slides      = Array.from(document.querySelectorAll('.slide'));
+const totalSlides = slides.length;
+let currentSlide  = 0;
+let currentStep   = 0;
+let quizScore     = 0;
+const quizAnswered = {};  // slideId → bool answered
+
+/* ══════════════════════════════════════
+   BUILD PROGRESS DOTS
+══════════════════════════════════════ */
+const progWrap = document.getElementById('prog-wrap');
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'p-dot' + (i === 0 ? ' active' : '');
+  d.dataset.slide = i;
+  d.addEventListener('click', () => goTo(i, 'jump'));
+  progWrap.appendChild(d);
+});
+const progDots = Array.from(document.querySelectorAll('.p-dot'));
+
+function updateProgress(idx) {
+  progDots.forEach((d, i) => {
+    d.classList.remove('active','done');
+    if (i < idx) d.classList.add('done');
+    if (i === idx) d.classList.add('active');
+  });
+}
+
+/* ══════════════════════════════════════
+   STEP HELPERS
+══════════════════════════════════════ */
+function getSteps(sl) { return Array.from(sl.querySelectorAll('.step')); }
+function totalSteps(sl) { return parseInt(sl.dataset.steps, 10) || 0; }
+
+function revealStep(sl, idx) {
+  const steps = getSteps(sl);
+  if (steps[idx]) {
+    steps[idx].classList.add('revealed');
+    if (steps[idx].classList.contains('q-feedback')) {
+      steps[idx].className = steps[idx].className.replace('q-feedback','') + ' q-feedback qf-correct';
+    }
+  }
+}
+function revealAll(sl) { getSteps(sl).forEach(s => s.classList.add('revealed')); }
+function hideAll(sl)   { getSteps(sl).forEach(s => s.classList.remove('revealed')); }
+
+function updateStepDots(sl, revealed) {
+  const id = sl.id;
+  const total = totalSteps(sl);
+  for (let i = 0; i < total; i++) {
+    const dot = document.getElementById(`${id}-sp${i}`);
+    if (dot) dot.classList.toggle('lit', i < revealed);
+  }
+}
+
+/* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+
+function updateButtons() {
+  const sl = slides[currentSlide];
+  const isLast  = currentSlide === totalSlides - 1;
+  const allRevd = currentStep >= totalSteps(sl);
+  // Quiz slides: can't advance unless answered
+  const isQuiz  = sl.dataset.quiz === 'true';
+  const answered = quizAnswered[sl.id] || false;
+
+  btnPrev.disabled = (currentSlide === 0 && currentStep === 0);
+  btnNext.disabled = isLast && allRevd || (isQuiz && !answered && allRevd);
+  if (isLast && allRevd) btnNext.disabled = true;
+}
+
+/* ══════════════════════════════════════
+   CORE NAVIGATION
+══════════════════════════════════════ */
+function goTo(target, dir) {
+  const sl = slides[currentSlide];
+
+  if (dir === 'next') {
+    const isQuiz  = sl.dataset.quiz === 'true';
+    // Block forward on quiz slides until answered
+    if (isQuiz && !quizAnswered[sl.id]) return;
+
+    const total = totalSteps(sl);
+    if (currentStep < total) {
+      revealStep(sl, currentStep);
+      currentStep++;
+      updateStepDots(sl, currentStep);
+      updateButtons();
+      return;
+    }
+    if (currentSlide < totalSlides - 1) {
+      sl.classList.remove('active');
+      currentSlide++;
+      currentStep = 0;
+      const next = slides[currentSlide];
+      hideAll(next);
+      next.classList.add('active');
+      updateStepDots(next, 0);
+      updateProgress(currentSlide);
+      updateButtons();
+    }
+
+  } else if (dir === 'prev') {
+    if (currentStep > 0) {
+      currentStep--;
+      const steps = getSteps(sl);
+      if (steps[currentStep]) steps[currentStep].classList.remove('revealed');
+      updateStepDots(sl, currentStep);
+      updateButtons();
+      return;
+    }
+    if (currentSlide > 0) {
+      sl.classList.remove('active');
+      currentSlide--;
+      const prev = slides[currentSlide];
+      revealAll(prev);
+      currentStep = totalSteps(prev);
+      prev.classList.add('active');
+      updateStepDots(prev, currentStep);
+      updateProgress(currentSlide);
+      updateButtons();
+    }
+
+  } else if (dir === 'jump') {
+    sl.classList.remove('active');
+    currentSlide = Math.max(0, Math.min(target, totalSlides - 1));
+    currentStep  = 0;
+    const t = slides[currentSlide];
+    hideAll(t);
+    t.classList.add('active');
+    updateStepDots(t, 0);
+    updateProgress(currentSlide);
+    updateButtons();
+  }
+}
+
+btnNext.addEventListener('click', () => goTo(null, 'next'));
+btnPrev.addEventListener('click', () => goTo(null, 'prev'));
+
+/* ══════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ([' ','ArrowRight'].includes(e.key)) { e.preventDefault(); goTo(null,'next'); }
+  if (e.key === 'ArrowLeft')              { e.preventDefault(); goTo(null,'prev'); }
+});
+
+/* ══════════════════════════════════════
+   TOUCH / SWIPE
+══════════════════════════════════════ */
+let tX = 0, tY = 0;
+const vp = document.getElementById('slide-viewport');
+vp.addEventListener('touchstart', e => { tX = e.changedTouches[0].clientX; tY = e.changedTouches[0].clientY; }, { passive: true });
+vp.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tX;
+  const dy = e.changedTouches[0].clientY - tY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 38) {
+    if (dx < 0) goTo(null,'next');
+    else         goTo(null,'prev');
+  }
+}, { passive: true });
+
+/* ══════════════════════════════════════
+   QUIZ ENGINE
+══════════════════════════════════════ */
+function initQuiz(slideEl) {
+  const opts = Array.from(slideEl.querySelectorAll('.quiz-option'));
+  const fbId = 'fb' + slideEl.id.replace('s','');
+  const fbEl = document.getElementById(fbId);
+
+  opts.forEach(opt => {
+    opt.addEventListener('click', function() {
+      if (quizAnswered[slideEl.id]) return;
+      quizAnswered[slideEl.id] = true;
+      const correct = this.dataset.correct === 'true';
+
+      opts.forEach(o => {
+        o.classList.add('disabled');
+        if (o.dataset.correct === 'true') o.classList.add('correct');
+      });
+      if (!correct) {
+        this.classList.add('wrong');
+        if (fbEl) { fbEl.classList.remove('qf-correct'); fbEl.classList.add('qf-wrong'); }
+      } else {
+        quizScore++;
+      }
+      if (fbEl) { fbEl.classList.add('revealed'); }
+      updateButtons();
+    });
+  });
+}
+
+// Init all quiz slides
+slides.filter(s => s.dataset.quiz === 'true').forEach(initQuiz);
+
+/* ══════════════════════════════════════
+   VIEWPORT HEIGHT FIT
+══════════════════════════════════════ */
+function fitViewport() {
+  const cb = document.getElementById('control-bar');
+  const cbH = cb.offsetHeight;
+  const vp  = document.getElementById('slide-viewport');
+  vp.style.height = `calc(100vh - ${cbH}px)`;
+  vp.style.height = `calc(100dvh - ${cbH}px)`;
+}
+fitViewport();
+window.addEventListener('resize', fitViewport);
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+(function init() {
+  slides.forEach((s, i) => {
+    if (i !== 0) s.classList.remove('active');
+    hideAll(s);
+  });
+  slides[0].classList.add('active');
+  updateProgress(0);
+  updateButtons();
+})();
+</script>
+</body>
+</html>
